@@ -60,9 +60,9 @@ public class IpsTest {
         //and  its starting state
         StartState ips1start = new StartState(ips1state0);
         // defining moon client actions
-        InputAction a1 = new InputAction("a1");
+        InputAction a1 = new InputAction("a");
         InputAction c = new InputAction("c");
-        OutputAction ap1 = new OutputAction("a2");
+        OutputAction ap1 = new OutputAction("a'");
         //defining moon client transitions
         Transition ips1t0 = new Transition(ips1state0, a1, ips1state1);
         Transition ips1t1 = new Transition(ips1state1, c, ips1state2);
@@ -96,9 +96,9 @@ public class IpsTest {
         
         StartState ips2start = new StartState(ips2state0);
         
-        OutputAction ap2 = new OutputAction("a1");
+        OutputAction ap2 = new OutputAction("a");
         OutputAction b = new OutputAction("b");
-        InputAction a2 = new InputAction("a2");
+        InputAction a2 = new InputAction("a'");
         
         Transition bst0 = new Transition(ips2state0, ap2, ips2state1);
         Transition bst1 = new Transition(ips2state1, b, ips2state2);
@@ -117,6 +117,12 @@ public class IpsTest {
         ips2.addTransition(bst0);
         ips2.addTransition(bst1);
         ips2.addTransition(bst2);
+        
+        a1.addEquivalent(ap2);
+        ap2.addEquivalent(a1);
+        
+        a2.addEquivalent(ap1);
+        ap1.addEquivalent(a2);
         
         int expResult = 6;
         Ips result = Ips.product(ips1, ips2);
@@ -142,9 +148,9 @@ public class IpsTest {
         //and  its starting state
         StartState ips1start = new StartState(ips1state0);
         // defining moon client actions
-        InputAction a1 = new InputAction("a1");
+        InputAction a1 = new InputAction("a");
         InputAction c = new InputAction("c");
-        OutputAction ap1 = new OutputAction("a2");
+        OutputAction ap1 = new OutputAction("a'");
         //defining moon client transitions
         Transition ips1t0 = new Transition(ips1state0, a1, ips1state1);
         Transition ips1t1 = new Transition(ips1state1, c, ips1state2);
@@ -178,9 +184,9 @@ public class IpsTest {
         
         StartState ips2start = new StartState(ips2state0);
         
-        OutputAction ap2 = new OutputAction("a1");
+        OutputAction ap2 = new OutputAction("a'");
         OutputAction b = new OutputAction("b");
-        InputAction a2 = new InputAction("a2");
+        InputAction a2 = new InputAction("a");
         
         Transition bst0 = new Transition(ips2state0, ap2, ips2state1);
         Transition bst1 = new Transition(ips2state1, b, ips2state2);
@@ -200,7 +206,13 @@ public class IpsTest {
         ips2.addTransition(bst1);
         ips2.addTransition(bst2);
         
-        int expResult = 4;
+        a1.addEquivalent(ap2);
+        ap2.addEquivalent(a1);
+        
+        a2.addEquivalent(ap1);
+        ap1.addEquivalent(a2);
+        
+        int expResult = 2;
         Ips result = Ips.composition(ips1, ips2);
         
         System.out.println(result.getTransitions());

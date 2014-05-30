@@ -25,10 +25,10 @@ import it.univaq.disim.ips.data.action.OutputAction;
 import it.univaq.disim.ips.data.state.StartState;
 import it.univaq.disim.ips.data.state.State;
 import it.univaq.disim.ips.data.transition.Transition;
-import it.univaq.disim.ontology.ProtocolOntology;
-import it.univaq.disim.ontology.data.AggregationTuple;
-import it.univaq.disim.ontology.data.Concept;
-import it.univaq.disim.ontology.data.SubsumptionPair;
+import it.univaq.disim.ips.ontology.ProtocolOntology;
+import it.univaq.disim.ips.ontology.data.AggregationTuple;
+import it.univaq.disim.ips.ontology.data.Concept;
+import it.univaq.disim.ips.ontology.data.SubsumptionPair;
 
 /**
  * Automatic Synthesis of Modular Connector via Composition of modular mediation

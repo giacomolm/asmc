@@ -4,11 +4,12 @@
  * and open the template in the editor.
  */
 
-package it.univaq.disim.ontology;
+package it.univaq.disim.ips.ontology;
 
-import it.univaq.disim.ontology.data.AggregationTuple;
-import it.univaq.disim.ontology.data.Concept;
-import it.univaq.disim.ontology.data.SubsumptionPair;
+import it.univaq.disim.ips.ontology.ProtocolOntology;
+import it.univaq.disim.ips.ontology.data.AggregationTuple;
+import it.univaq.disim.ips.ontology.data.Concept;
+import it.univaq.disim.ips.ontology.data.SubsumptionPair;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -59,7 +60,9 @@ public class ProtocolOntologyTest {
         
         po.addSubsumptionPair(sp);        
         
-        //assertEquals(expResult, result);
+        System.out.println(sp.getIps());
+        int expResult = 2;
+        assertEquals(expResult, sp.getIps().getTransitions().size());
         
     }
 }

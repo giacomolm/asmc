@@ -17,7 +17,7 @@
 * under the License.
 */
 
-package it.univaq.disim.ontology.data;
+package it.univaq.disim.ips.ontology.data;
 
 import java.util.ArrayList;
 import java.util.List;

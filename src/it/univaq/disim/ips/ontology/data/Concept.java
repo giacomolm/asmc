@@ -17,36 +17,27 @@
 * under the License.
 */
 
-package it.univaq.disim.ontology.data;
-
-import java.util.ArrayList;
-import java.util.List;
+package it.univaq.disim.ips.ontology.data;
 
 /**
  *
  * @author Giacomo
  */
-public class SubsumptionPair {
+public class Concept {
     
-    private List<Concept> pair;
-  
-    /**
-    * Create a sumbsumption pair, regarding the position of the parameters.
-    * @param c1
-    * @param c2 
-    */
-    public SubsumptionPair(Concept c1, Concept c2){
-        pair = new ArrayList();
-        pair.add(c1);
-        pair.add(c2);
-    }
-    
-    public List<Concept> getPair() {
-        return pair;
+    private String name;
+
+    public Concept(String name) {
+        this.name = name;
     }
 
-    public void setPair(Concept c1, Concept c2) {
-        pair.set(0, c1);
-        pair.set(1, c2);
+    public String getName() {
+        return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
 }

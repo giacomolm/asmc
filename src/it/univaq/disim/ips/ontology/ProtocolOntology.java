@@ -17,11 +17,11 @@
 * under the License.
 */
 
-package it.univaq.disim.ontology;
+package it.univaq.disim.ips.ontology;
 
-import it.univaq.disim.ontology.data.AggregationTuple;
-import it.univaq.disim.ontology.data.Concept;
-import it.univaq.disim.ontology.data.SubsumptionPair;
+import it.univaq.disim.ips.ontology.data.AggregationTuple;
+import it.univaq.disim.ips.ontology.data.Concept;
+import it.univaq.disim.ips.ontology.data.SubsumptionPair;
 import java.util.ArrayList;
 import java.util.List;
 

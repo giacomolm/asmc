@@ -19,6 +19,9 @@
 
 package it.univaq.disim.ips.data.action;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Giacomo
@@ -30,8 +33,11 @@ public abstract class Action {
      */
     private String label;
     
+    private List<Action> equivalents;
+    
     public Action(String label) {
         this.label = label;
+        equivalents = new ArrayList<>();
     }
 
     public String getLabel() {
@@ -48,14 +54,23 @@ public abstract class Action {
      * @return 
      */
     public boolean equivalent(Action a){
-        if(this.label == a.label) return true;
+        if(this.equivalents.contains(a)) return true;
         else return false;
     }
+    
+    public void addEquivalent(Action a){
+        this.equivalents.add(a);
+    }
+            
 
     public boolean equals(Action a) {
         if(this.label == a.label) return true;
         else return false;
     }
-    
+
+    @Override
+    public String toString() {
+        return this.getLabel(); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

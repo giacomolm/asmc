@@ -85,7 +85,7 @@ public class Ips {
         return inputs;
     }
 
-    public void setInputs(List<Action> inputs) {
+    protected void setInputs(List<Action> inputs) {
         this.inputs = inputs;
     }
     
@@ -141,17 +141,22 @@ public class Ips {
         List<Action> ips1_inaction = ips1.getInputs(), ips2_outaction = ips2.getOutputs(),
                      ips1_outaction = ips1.getOutputs(), ips2_inaction = ips2.getInputs();
         int i,j;
+        
         for(i=0; i<ips1_inaction.size(); i++){
             for(j=0; j<ips2_outaction.size(); j++){
-                if(ips1_inaction.get(i).equivalent(ips2_outaction.get(j))) 
+                if(ips1_inaction.get(i).equivalent(ips2_outaction.get(j))){ 
                      result.add(ips1_inaction.get(i));
+                     result.add(ips2_outaction.get(j));
+                }
             }
         }
         
         for(i=0; i<ips1_outaction.size(); i++){
             for(j=0; j<ips2_inaction.size(); j++){
-                if(ips1_outaction.get(i).equivalent(ips2_inaction.get(j))) 
+                if(ips1_outaction.get(i).equivalent(ips2_inaction.get(j))){
                      result.add(ips1_outaction.get(i));
+                     result.add(ips2_inaction.get(j));
+                }
             }
         }
         return result;
@@ -166,20 +171,22 @@ public class Ips {
                          tl2 = ips2.getTransitions();
         int i, j;
         List<Action> common_actions = common(ips1, ips2); //getting the common actions
+
         for(i=0; i<tl1.size(); i++){
             if(tl1.get(i).getSource().equals(s1)){
                 //getting the corresponding action
                 Action action = tl1.get(i).getAction();
                 //if the action is an instance of InputAction, and is contained in common_actions
                 //we have to check if the other Ips can generate this action
-                if((action instanceof InputAction)&&(common_actions.contains(action))){
+                
+                if((action instanceof InputAction)&&(common_actions.contains(action))){                    
                     for(j=0; j<tl2.size(); j++){
                         //we're right transition containing as source state the state s2
                         if(tl2.get(j).getSource().equals(s2)){
                                 
                             if(tl2.get(j).getAction() instanceof OutputAction){
                                 //if the action are equal, we have found the equivalent output action
-                                if(tl2.get(j).getAction().equals(action)){
+                                if(tl2.get(j).getAction().equivalent(action)){
                                     return false;
                                 }
                                 else return checkInconsistency(ips1, ips2, s1, tl2.get(j).getTarget());
@@ -197,12 +204,12 @@ public class Ips {
                 }
                 else //the immediate action after the state s1 is an output action, so we have to find potential input action (of the same meaning) 
                     if((action instanceof OutputAction)&&(common_actions.contains(action))){
+                   
                     for(j=0; j<tl2.size(); j++){
-                        if(tl2.get(j).getSource().equals(s2)){
-                            
+                        if(tl2.get(j).getSource().equals(s2)){                           
                             if(tl2.get(j).getAction() instanceof InputAction){
                                 //if the action are equivalent, we have an inconsistency, as explained
-                                if(tl2.get(j).getAction().equals(action)){
+                                if(tl2.get(j).getAction().equivalent(action)){
                                     return true;
                                 }
                                 else return false;
@@ -213,8 +220,7 @@ public class Ips {
                     }
                 }
             }
-        }
-        
+        }        
         return false;
     }
     
@@ -400,100 +406,121 @@ public class Ips {
         hidden_actions.addAll(common_actions);
         
         //Setting all the transition of the new IPS
+        j=0; //j will contain the ips2 most advanced transition index
         for(i=0; i<ips1.getTransitions().size(); i++){
             //getting the i-th transition of ips1
             Transition t1 = ips1.getTransitions().get(i);
             //if exists the equivalent action in the j-th transaction, then mark this variable to true
             boolean action_equivalent = false;
-            
-            for(j=0; j<ips2.getTransitions().size(); j++){
-                //getting the j-th transition of ips2
-                Transition t2 = ips2.getTransitions().get(j);     
-                //if both the action are equivalent, then i've to create the new transition
-                if(t1.getAction().equivalent(t2.getAction())){
-                    //creating the new states
-                    BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
-                                target = new BinaryState(t1.getTarget(), t2.getTarget());
-                    
-                    //creating the new transition and adding it to the collection
-                    transitions.add(new Transition(source, t1.getAction(), target));
-                             
-                    //setting the action_equivalent to true, as we've found it
-                    action_equivalent = true;
-                     
-                }
-                else if(t1.getAction().equals(t2.getAction())&& //if the two actions are equals and
-                        common_actions.contains(t1.getAction())){//the t1 action is common
-                            //creating the new states
-                            BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
-                                        target = new BinaryState(t1.getTarget(), t2.getTarget());
+           
+            //getting the j-th transition of ips2
+            Transition t2 = ips2.getTransitions().get(j);     
+            //if both the action are equivalent, then i've to create the new transition
+            if(t1.getAction().equivalent(t2.getAction())){
+                //WE CAN HIDE INTERNAL TRANSITION ? YEAH
+                /*BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
+                            target = new BinaryState(t1.getTarget(), t2.getTarget());
 
-                            //creating the new transition and adding it to the collection
-                            transitions.add(new Transition(source, t1.getAction(), target));
-                }
+                //creating the new transition and adding it to the collection
+                transitions.add(new Transition(source, t1.getAction(), target));
+
+                //setting the action_equivalent to true, as we've found it
+                action_equivalent = true;*/
+
+                //incrementing j, as we are moving in both the ips                
+                j++;
+            }
+            else if(t1.getAction().equals(t2.getAction())&& //if the two actions are equals and
+                    common_actions.contains(t1.getAction())){//the t1 action is common
+                        //creating the new states
+                        BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
+                                    target = new BinaryState(t1.getTarget(), t2.getTarget());
+
+                        //creating the new transition and adding it to the collection
+                        transitions.add(new Transition(source, t1.getAction(), target));
+                        //incrementing j, as we are moving in both the ips                        
+                        j++;
             }
             
             if((!action_equivalent) && //if there isn't any transition in ips2 with the equivalent action and
                (!common_actions.contains(t1.getAction()))){//the action in t1 is not in common
-                //we have to define two new transitions                 
-                if(i<ips2.getTransitions().size()){
-                    //getting the j-th transition of ips2
-                    Transition t2 = ips2.getTransitions().get(i);
-                    
+                //we have to define two new transitions                                                    
+                if(! common_actions.contains(t2.getAction())){
                     //for the  transition in ips1 create e new binary transition
                     BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
                                 target = new BinaryState(t1.getTarget(), t2.getSource());                    
-                    
+
                     //check the consistency
                     if(!checkInconsistency(ips1, ips2, t1.getTarget(), t2.getSource())){  
                         //creating the new transition and adding it to the collection
                         transitions.add(new Transition(source, t1.getAction(), target));
-                        
+
                         source = new BinaryState(t1.getTarget(), t2.getSource());
                         target = new BinaryState(t1.getTarget(), t2.getTarget());
                         //creating the new transition and adding it to the collection
                         transitions.add(new Transition(source, t2.getAction(), target));
+
                     }
+
+                    //increment the index due the fact that these are 3rdy part actions                        
+                    j++;
+                }
+                else {
+
+                    BinaryState source = new BinaryState(t1.getSource(), t2.getSource()),
+                                target = new BinaryState(t1.getTarget(), t2.getSource());
+
+                    transitions.add(new Transition(source, t1.getAction(), target));
+
+                    //ips2.getTransitions().add(t2);
                 }
             }
         }
         
         //now we need to discover the actions in ips2 don't having en equivalent action in ips1
+        i=0;
         for(j=0; j<ips2.getTransitions().size(); j++){
             //getting the i-th transition of ips1
             Transition t1 = ips2.getTransitions().get(j);
             //if exists the equivalent action in the j-th transaction, then mark this variable to true
             boolean action_equivalent = false;
-            for(i=0; i<ips1.getTransitions().size(); i++){
-                //getting the i-th transitio in ips1
-                Transition t2 = ips1.getTransitions().get(i);
-                //we're interested to equivalent actions and their existence
-                if(t1.getAction().equivalent(t2.getAction())){
-                    //an equivalent action is found in ips1
-                    action_equivalent = true;
-                }
+            
+            //getting the i-th transitio in ips1
+            Transition t2 = ips1.getTransitions().get(i);
+            //we're interested to equivalent actions and their existence
+            if(t1.getAction().equivalent(t2.getAction())){
+                //an equivalent action is found in ips1
+                action_equivalent = true;
+                //incrementing the i index as we are proceeding in both the side
+                i++;
             }
             
             if(!action_equivalent && //if doesn't exist an equivalent action
               (!common_actions.contains(t1.getAction()))){//the action in t1 is not in common
                 
-                    if(j<ips1.getTransitions().size()){
-                        //getting the j-th transition of ips2
-                        Transition t2 = ips1.getTransitions().get(j);
+                    if(! common_actions.contains(t2.getAction())){
                         //for each transition in ips1 create e new binary transition
                         BinaryState source = new BinaryState(t2.getSource(), t1.getSource()),
                                     target = new BinaryState(t2.getSource(), t1.getTarget());
-                        
+
                         //check the consistency
                         if(!checkInconsistency(ips2, ips1, t1.getTarget(), t2.getSource())){
                             //creating the new transition and adding it to the collection
                             transitions.add(new Transition(source, t1.getAction(), target));
-                            
+
                             source = new BinaryState(t2.getSource(), t1.getTarget());
                             target = new BinaryState(t2.getTarget(), t1.getTarget());
                             //creating the new transition and adding it to the collection
                             transitions.add(new Transition(source, t2.getAction(), target));
                         }
+                        //increment the index due the fact that these are 3rdy part actions
+                        i++;
+                    }
+                    else{
+                        BinaryState source = new BinaryState(t2.getSource(), t1.getTarget()),
+                                    target = new BinaryState(t2.getTarget(), t1.getTarget());
+
+                        transitions.add(new Transition(source, t1.getAction(), target));
                     }
             }
         }
@@ -506,4 +533,15 @@ public class Ips {
         result.setTransitions(transitions);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return  "States: "+this.states+"\n"+
+                "Input Actions: "+this.inputs+"\n"+
+                "Output Actions: "+this.outputs+"\n"+
+                "Hidden Actions: "+this.hiddens+"\n"+
+                "Transitions: "+this.transitions+"\n";
+    }
+    
+    
 }
