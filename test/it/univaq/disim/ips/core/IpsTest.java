@@ -213,8 +213,9 @@ public class IpsTest {
         ap1.addEquivalent(a2);
         
         int expResult = 2;
-        Ips result = Ips.composition(ips1, ips2);
+        Ips result = ips1.composition(ips2);
         
+        System.out.println(Ips.common(ips1, ips2));
         System.out.println(result.getTransitions());
         
         assertEquals(expResult, result.getTransitions().size());

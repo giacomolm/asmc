@@ -102,6 +102,6 @@ public class SubsumptionPair {
         output2.addEquivalent(cons_input);
         cons_input.addEquivalent(output2);
         
-        return Ips.composition(split, cons);
+        return split.composition(cons);
     }
 }

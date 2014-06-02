@@ -27,7 +27,7 @@ public class Trans extends Ips{
         
         this.addState(t1.getSource());
         this.addState(t1.getTarget());
-        this.addState(t1.getTarget());
+        this.addState(t2.getTarget());
         
         try{
             this.addInput((InputAction)t1.getAction());

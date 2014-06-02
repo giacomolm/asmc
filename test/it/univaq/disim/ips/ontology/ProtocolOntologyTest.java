@@ -48,7 +48,7 @@ public class ProtocolOntologyTest {
      */
     @Test
     public void testSubsumptionPairToIps() {
-        System.out.println("Testing subsumption pait conversion to Ips");
+        System.out.println("Testing subsumption pair conversion to Ips");
         ProtocolOntology po = new ProtocolOntology();
         Concept place_order = new Concept("placeOrder"), 
                 close_order = new Concept("closeOrder");
@@ -63,6 +63,29 @@ public class ProtocolOntologyTest {
         System.out.println(sp.getIps());
         int expResult = 2;
         assertEquals(expResult, sp.getIps().getTransitions().size());
+        
+    }
+    
+    /**
+     * Test of AggregationTuple ips method, of class ProtocolOntology.
+     */
+    @Test
+    public void testAggregationTuplesToIps() {
+        System.out.println("Testing aggregation tuple conversion to Ips");
+        ProtocolOntology po = new ProtocolOntology();
+        Concept create_order = new Concept("createOrder"), 
+                start_order = new Concept("startOrder"),
+                login = new Concept("login");
+        
+        AggregationTuple at = new AggregationTuple(start_order);
+        at.addAggregationConcept(create_order);
+        at.addAggregationConcept(login);       
+        
+        po.addAggregationTuple(at);        
+        
+        System.out.println(at.getIps());
+        int expResult = 5;
+        assertEquals(expResult, at.getIps().getTransitions().size());
         
     }
 }

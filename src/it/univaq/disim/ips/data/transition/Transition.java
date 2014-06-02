@@ -64,7 +64,7 @@ public class Transition {
 
     @Override
     public String toString() {
-        return this.source.toString()+"->"+this.action.getLabel()+"->"+this.target.toString();
+        return this.source.getName()+"->"+this.action.getLabel()+"->"+this.target.getName()+"\n";
     }
     
     

@@ -34,7 +34,10 @@ public class BinaryState extends State{
         states = new ArrayList();
         states.add(s1);
         states.add(s2);
+        setName(s1.getName()+","+s2.getName());
     }
+    
+    
     
     
     public static List<State> cartesianProduct(List<State> l1, List<State> l2){
