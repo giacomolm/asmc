@@ -52,6 +52,8 @@ public class State {
         else return false;
     }
     
-    
+    public String getAlias(){
+        return this.name;
+    }
     
 }

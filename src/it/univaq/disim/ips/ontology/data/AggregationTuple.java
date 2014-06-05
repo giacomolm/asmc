@@ -108,7 +108,6 @@ public class AggregationTuple {
         
         Ips result = trans_list.get(0);
         
-        
         List<State> merge_states = new ArrayList();
         List<Action> merge_inputs = new ArrayList();
         List<Transition> merge_transitions = new ArrayList();
@@ -155,9 +154,11 @@ public class AggregationTuple {
             result = result.composition(trans_list.get(i));
         }
         
-        result = result.composition(prod);
+        result = result.composition(prod);        
         
         result = result.composition(merge);
+        
+        result.setType("at");
         
         return result;
     }

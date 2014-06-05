@@ -31,11 +31,15 @@ public class Transition {
     private State source,target;
     
     private Action action;
+    
+    private boolean loopTransition;
 
     public Transition(State source, Action action, State target) {
         this.source = source;
         this.action = action;
         this.target = target;
+        
+        if(source.equals(target)) setAsLoopTransition();
     }
 
     public State getSource() {
@@ -62,9 +66,17 @@ public class Transition {
         this.action = action;
     }
 
+    private void setAsLoopTransition(){
+        loopTransition = true;                
+    }
+    
+    public boolean isALoopTransition(){
+        return loopTransition;
+    }
+    
     @Override
     public String toString() {
-        return this.source.getName()+"->"+this.action.getLabel()+"->"+this.target.getName()+"\n";
+        return this.source.getAlias()+"->"+this.action.getLabel()+"->"+this.target.getAlias()+"\n";
     }
     
     

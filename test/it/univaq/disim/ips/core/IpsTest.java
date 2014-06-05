@@ -221,4 +221,71 @@ public class IpsTest {
         assertEquals(expResult, result.getTransitions().size());
     }
     
+    /**
+     * Test of composition method, of class Ips.
+     
+    @Test
+    public void testWrap() {
+        System.out.println("Wrapping ");
+        
+        // defining an excerpt the blue service interaction protocol
+        Ips blue_service = new Ips(new Long(2));
+        //defining moon client states
+        State bs_state0 = new State("s0");
+        State bs_state1 = new State("s1");
+        State bs_state2 = new State("s2");
+        //and  its starting state
+        StartState bs_start = new StartState(bs_state0);
+        // defining moon client actions
+        InputAction start_order = new InputAction("startOrder");
+        OutputAction place_order = new OutputAction("placeOrder");
+        //defining moon client transitions
+        Transition bs_t0 = new Transition(bs_state0, start_order, bs_state1);
+        Transition bs_t1 = new Transition(bs_state1, place_order, bs_state2);
+        
+        //adding all the state elements to the ips
+        blue_service.addState(bs_state0);
+        blue_service.addState(bs_state1);
+        blue_service.addState(bs_state2);
+        
+        blue_service.setStart(bs_start);
+        
+        //adding previous defined actions to moon client IPS
+        blue_service.addInput(start_order);
+        blue_service.addOutput(place_order);
+        
+        //adding transition
+        blue_service.addTransition(bs_t0);
+        blue_service.addTransition(bs_t1);
+        
+        //Defining the aggregation tuple        
+        AggregationTuple at = new AggregationTuple(new Concept("startOrder"));
+        at.addAggregationConcept(new Concept("createOrder"));
+        at.addAggregationConcept(new Concept("login"));       
+                
+        Ips at_ips = at.getIps();
+        
+        //setting equivalent actions
+        start_order.addEquivalent(at_ips.getActionByName("startOrder"));
+        at_ips.getActionByName("startOrder").addEquivalent(start_order);
+        
+        Ips result = at_ips.wrap(blue_service);
+        
+        //definining the subsumption pair
+        SubsumptionPair sp = new SubsumptionPair(new Concept("placeOrder"), new Concept("closeOrder"));                         
+        
+        Ips sp_ips = sp.getIps();
+        
+        //defining the place order equivalent actions
+        place_order.addEquivalent(sp_ips.getActionByName("placeOrder"));
+        sp_ips.getActionByName("placeOrder").addEquivalent(place_order);
+        
+        result = sp_ips.wrap(result);
+        
+        System.out.println(result);
+        
+        //assertEquals(expResult, result.getTransitions().size());
+    }*/
+
+    
 }
