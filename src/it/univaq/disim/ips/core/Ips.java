@@ -202,6 +202,7 @@ public class Ips {
         List<Action> common_actions = common(ips1, ips2); //getting the common actions
 
         for(i=0; i<tl1.size(); i++){
+                        
             
             if(tl1.get(i).getSource().equals(s1)){
                 //getting the corresponding action
@@ -209,7 +210,8 @@ public class Ips {
                 //if the action is an instance of InputAction, and is contained in common_actions
                 //we have to check if the other Ips can generate this action
                 
-                if((action instanceof InputAction)&&(common_actions.contains(action))){                    
+                if((action instanceof InputAction)&&(common_actions.contains(action))){
+                    
                     for(j=0; j<tl2.size(); j++){
                         //we're right transition containing as source state the state s2
                         if(tl2.get(j).getSource().equals(s2)){
@@ -220,14 +222,20 @@ public class Ips {
                                 if(tl2.get(j).getAction().equivalent(action)){
                                     return tl2.get(j);
                                 }
-                                else return null;//checkInconsistency(ips1, ips2, s1, tl2.get(j).getTarget());
+                                else{
+                                     
+                                    return null;
+                                }//checkInconsistency(ips1, ips2, s1, tl2.get(j).getTarget());
                             }
                             else if(lookahead){
                                 //we have to continue the searching of the output equivalent action,
                                 //avoiding the presence of other common input action
                                 if(!common_actions.contains(tl2.get(j).getAction())) 
                                     return checkInconsistency(ips1, ips2, s1, tl2.get(j).getTarget(),true);
-                                else return null;
+                                else{
+                                   
+                                    return null;
+                                }
                             }
 
                         }
@@ -235,26 +243,34 @@ public class Ips {
                 }
                 else //the immediate action after the state s1 is an output action, so we have to find potential input action (of the same meaning) 
                     if((action instanceof OutputAction)&&(common_actions.contains(action))){
-                   
+                                          
+                    
                     for(j=0; j<tl2.size(); j++){
+                       
                         if(tl2.get(j).getSource().equals(s2)){                           
                             if(tl2.get(j).getAction() instanceof InputAction){
-                                //if the action are equivalent, we have an inconsistency, as explained
-                                
+                                //if the action are equivalent, we have an inconsistency, as explained                                
                                 if(tl2.get(j).getAction().equivalent(action)){
                                     return tl2.get(j);
                                 }
-                                else return null;
+                                /*else{
+                                    
+                                    return null;
+                                }*/
                             }
-                            else //if the action is an output, we have to contine the exploration
-                                return null; //checkInconsistency(ips1, ips2, s1, tl2.get(j).getTarget(),true);
+                            else{ //if the action is an output, we have to contine the exploration
+                                
+                                return null;
+                            }
                         }
                     }
+                    //if there isn't a consistency path, we have to return null;
+                    return null;
                 }
             }
         }
         Transition t = new Transition(new State("fake0"), null, new State("fake1"));
-        return t;// (new Transition(new State("fake0"), null, new State("fake1")));
+        return t;
     }
     
     /**
@@ -433,7 +449,8 @@ public class Ips {
                         State source = new BinaryState(start1, start2, new_state1, new_state2),
                               target = new BinaryState(t1.getTarget(), start2, new_state1+1, new_state2);                                             
                         
-                        //if(checkInconsistency(ips1, ips2, t1.getTarget(), start2, true)!=null){                        
+
+                        if(checkInconsistency(ips1, ips2, t1.getTarget(), start2, true)!=null){                        
                             //creating the new transition and trying to add it to the collection
                             Transition new_t = new Transition(source, t1.getAction(), target);
 
@@ -453,7 +470,7 @@ public class Ips {
                                 transitions.addAll(this.getComposedTransition(ips1, ips2, t1.getTarget(), start2, new_state1+1, new_state2, ips1_action , ips2_action, existing));
                                 ips1_action.remove(t1.getAction());
                             }
-                        //}
+                        }
                     }
                 }
             }
@@ -485,8 +502,9 @@ public class Ips {
                         
                         State source = new BinaryState(start1, start2, new_state1, new_state2),
                               target = new BinaryState(start1, t1.getTarget(), new_state1, (new_state2+1));                                            
+                                              
                         
-                        //if(checkInconsistency(ips2, ips1, t1.getTarget(), start1, true)!=null){
+                        if(checkInconsistency(ips2, ips1, t1.getTarget(), start1, true)!=null){
                             Transition new_t = new Transition(source, t1.getAction(), target);
                             boolean found = false;
                             for(i=0; i<existing.size(); i++){
@@ -503,7 +521,7 @@ public class Ips {
                                 transitions.addAll(this.getComposedTransition(ips1, ips2, start1, t1.getTarget(), new_state1, new_state2+1, ips1_action , ips2_action, existing));
                                 ips2_action.remove(t1.getAction());
                             }
-                        //}
+                        }
                     }
                 }
             }
@@ -577,66 +595,6 @@ public class Ips {
     }
     
     
-    public Ips wrap(Ips ips){
-        Ips result = new Ips();
-        List<State> states;
-        List<Action> in_actions = new ArrayList(),
-                     out_actions = new ArrayList(),
-                     hidden_actions = new ArrayList();
-        List<Transition> transitions = new ArrayList();
-        int i,j;
-        
-        //calculating the common actions
-        List<Action> common_actions = common(this, ips);
-        
-        //adding all the input actions of the this, and removing the common ones
-        in_actions.addAll(this.getInputs());
-        in_actions.removeAll(common_actions);
-        //adding all the input actions of the ips, and removing the common ones
-        in_actions.addAll(ips.getInputs());
-        in_actions.removeAll(common_actions);
-        
-        //adding all the output actions of the this, and removing the common ones
-        out_actions.addAll(this.getOutputs());
-        out_actions.removeAll(common_actions);
-        //adding all the input actions of the ips, and removing the common ones
-        out_actions.addAll(ips.getOutputs());
-        out_actions.removeAll(common_actions);
-        
-        //adding the hidden actions to the resulting ips
-        hidden_actions.addAll(this.getHiddens());
-        hidden_actions.addAll(ips.getHiddens());
-        //and we have to add all the common actions
-        hidden_actions.addAll(common_actions);
-        
-        //Cartesian product of the two set of states
-        //states = BinaryState.cartesianProduct(this.getStates(), ips.getStates());
-        transitions = getComposedTransition(this, ips, this.getTransitions().get(0).getSource(), ips.getTransitions().get(0).getSource(), 0,0, new ArrayList(), new ArrayList(), new ArrayList());
-
-        //Cartesian product of the two set of states
-        states = new ArrayList();//BinaryState.cartesianProduct(this.getStates(), ips.getStates());
-        for(i=0; i<transitions.size(); i++){
-            boolean found1 = false, found2 = false;
-            for(j=0; j<states.size(); j++){
-                if(states.get(j).equals(transitions.get(i).getSource()))
-                        found1 = true;
-                if(states.get(j).equals(transitions.get(i).getTarget())){
-                        found2 = true;
-                }
-            }
-            if(!found1) states.add(transitions.get(i).getSource());
-            if(!found2) states.add(transitions.get(i).getTarget());
-        }
-        
-        result.setStates(states);
-        result.setInputs(in_actions);
-        result.setOutputs(out_actions);
-        result.setHiddens(hidden_actions);
-        result.setTransitions(transitions);
-        
-        return result;
-    }
-    
     private List<Transition> getWrappingTransitions(Ips ips1, Ips ips2){
         
         List<Transition> result = new ArrayList();
@@ -675,9 +633,9 @@ public class Ips {
                             s1 = new BinaryState(t.getSource(), ips2.getTransitions().get(j).getSource(), ((BinaryState)t.getSource()).getS1_num(), ((BinaryState)t.getSource()).getS2_num()+j);
                             s2 = new BinaryState(t.getSource(), ips2.getTransitions().get(j).getTarget(), ((BinaryState)t.getSource()).getS1_num(), ((BinaryState)t.getSource()).getS2_num()+j+1);
 
-                        new_t = new Transition(s1, ips2.getTransitions().get(j).getAction(), s2);
+                            new_t = new Transition(s1, ips2.getTransitions().get(j).getAction(), s2);
 
-                        result.add(new_t);
+                            result.add(new_t);
                         }
 
                         s1 = new BinaryState(t.getSource(), ips2.getTransitions().get(j).getSource(), ((BinaryState)t.getSource()).getS1_num(), ((BinaryState)t.getSource()).getS2_num()+j);
@@ -996,7 +954,7 @@ public class Ips {
     @Override
     public String toString() {
         return  "States: "+this.states+"\n"+
-                "Start: "+this.start.getAlias()+"\n"+
+                //"Start: "+((BinaryState)this.start).getAlias()+"\n"+
                 "Input Actions: "+this.inputs+"\n"+
                 "Output Actions: "+this.outputs+"\n"+
                 "Hidden Actions: "+this.hiddens+"\n"+

@@ -11,6 +11,10 @@ import it.univaq.disim.ips.data.action.OutputAction;
 import it.univaq.disim.ips.data.state.StartState;
 import it.univaq.disim.ips.data.state.State;
 import it.univaq.disim.ips.data.transition.Transition;
+import it.univaq.disim.ips.ontology.ProtocolOntology;
+import it.univaq.disim.ips.ontology.data.AggregationTuple;
+import it.univaq.disim.ips.ontology.data.Concept;
+import it.univaq.disim.ips.ontology.data.SubsumptionPair;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -222,70 +226,93 @@ public class IpsTest {
     }
     
     /**
-     * Test of composition method, of class Ips.
-     
+     * Test of align method, of class Ips.
+    */
     @Test
-    public void testWrap() {
+    public void testAlign() {
         System.out.println("Wrapping ");
         
-        // defining an excerpt the blue service interaction protocol
-        Ips blue_service = new Ips(new Long(2));
-        //defining moon client states
-        State bs_state0 = new State("s0");
-        State bs_state1 = new State("s1");
-        State bs_state2 = new State("s2");
-        //and  its starting state
-        StartState bs_start = new StartState(bs_state0);
-        // defining moon client actions
-        InputAction start_order = new InputAction("startOrder");
-        OutputAction place_order = new OutputAction("placeOrder");
-        //defining moon client transitions
-        Transition bs_t0 = new Transition(bs_state0, start_order, bs_state1);
-        Transition bs_t1 = new Transition(bs_state1, place_order, bs_state2);
+        //Definition of Blue Service interaction protocol
+        Ips blueService = new Ips(new Long(1));
         
-        //adding all the state elements to the ips
-        blue_service.addState(bs_state0);
-        blue_service.addState(bs_state1);
-        blue_service.addState(bs_state2);
+        State bsstate0 = new State("t0");
+        State bsstate1 = new State("t1");
+        State bsstate2 = new State("t2");
+        State bsstate3 = new State("t3");
+        State bsstate4 = new State("t4");
+        State bsstate5 = new State("t5");
         
-        blue_service.setStart(bs_start);
+        StartState bsstart = new StartState(bsstate0);
         
-        //adding previous defined actions to moon client IPS
-        blue_service.addInput(start_order);
-        blue_service.addOutput(place_order);
+        InputAction startOrder = new InputAction("startOrder");
+        InputAction addItemToOrder = new InputAction("addItemToOrder");
+        OutputAction getConfirmation= new OutputAction("getConfirmation");
+        OutputAction placeOrder = new OutputAction("placeOrder");
+        InputAction quit = new InputAction("quit");
         
-        //adding transition
-        blue_service.addTransition(bs_t0);
-        blue_service.addTransition(bs_t1);
         
-        //Defining the aggregation tuple        
-        AggregationTuple at = new AggregationTuple(new Concept("startOrder"));
-        at.addAggregationConcept(new Concept("createOrder"));
-        at.addAggregationConcept(new Concept("login"));       
+        Transition bst0 = new Transition(bsstate0, startOrder, bsstate1);
+        Transition bst1 = new Transition(bsstate1, addItemToOrder, bsstate2);
+        Transition bst2 = new Transition(bsstate2, addItemToOrder, bsstate2);
+        Transition bst3 = new Transition(bsstate2, getConfirmation, bsstate3);
+        Transition bst4 = new Transition(bsstate3, getConfirmation, bsstate3);
+        Transition bst5 = new Transition(bsstate3, placeOrder, bsstate4);
+        Transition bst6 = new Transition(bsstate4, quit, bsstate5);
+        
+        blueService.addState(bsstate0);
+        blueService.addState(bsstate1);
+        blueService.addState(bsstate2);
+        blueService.addState(bsstate3);
+        blueService.addState(bsstate4);
+        blueService.addState(bsstate5);
+        
+        blueService.setStart(bsstart);
+        
+        blueService.addInput(startOrder);
+        blueService.addInput(addItemToOrder);
+        blueService.addOutput(getConfirmation);
+        blueService.addOutput(placeOrder);
+        blueService.addInput(quit);
+        
+        blueService.addTransition(bst0);
+        blueService.addTransition(bst1);
+        blueService.addTransition(bst2);
+        blueService.addTransition(bst3);
+        blueService.addTransition(bst4);
+        blueService.addTransition(bst5);
+        blueService.addTransition(bst6);
+        
+        //defining the Semantic Web Service protocol ontolgy
+        ProtocolOntology po = new ProtocolOntology();
                 
-        Ips at_ips = at.getIps();
-        
-        //setting equivalent actions
-        start_order.addEquivalent(at_ips.getActionByName("startOrder"));
-        at_ips.getActionByName("startOrder").addEquivalent(start_order);
-        
-        Ips result = at_ips.wrap(blue_service);
-        
         //definining the subsumption pair
-        SubsumptionPair sp = new SubsumptionPair(new Concept("placeOrder"), new Concept("closeOrder"));                         
+        SubsumptionPair sp1 = new SubsumptionPair(new Concept("placeOrder"), new Concept("closeOrder")),
+                        sp2 = new SubsumptionPair(new Concept("getConfirmation"), new Concept("confirmItem"));
+
+        //Defining the aggregation tuple  
+        AggregationTuple at1 = new AggregationTuple(new Concept("addItemToOrder")),
+                         at2 = new AggregationTuple(new Concept("quit")),
+                         at3 = new AggregationTuple(new Concept("startOrder"));        
         
-        Ips sp_ips = sp.getIps();
+        at1.addAggregationConcept(new Concept("selectItem"));
+        at1.addAggregationConcept(new Concept("selectItemQuantity"));        
         
-        //defining the place order equivalent actions
-        place_order.addEquivalent(sp_ips.getActionByName("placeOrder"));
-        sp_ips.getActionByName("placeOrder").addEquivalent(place_order);
+        at2.addAggregationConcept(new Concept("close"));
         
-        result = sp_ips.wrap(result);
+        at3.addAggregationConcept(new Concept("createOrder"));
+        at3.addAggregationConcept(new Concept("login"));
         
-        System.out.println(result);
+        po.addSubsumptionPair(sp1);       
+        po.addSubsumptionPair(sp2);
         
-        //assertEquals(expResult, result.getTransitions().size());
-    }*/
+        po.addAggregationTuple(at1);
+        po.addAggregationTuple(at2);
+        po.addAggregationTuple(at3);
+        
+        int result = blueService.align(po).getTransitions().size();    
+        
+        assertEquals(14, result);
+    }
 
     
 }

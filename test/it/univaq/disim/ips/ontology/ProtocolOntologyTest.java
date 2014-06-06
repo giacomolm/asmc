@@ -83,9 +83,32 @@ public class ProtocolOntologyTest {
         
         po.addAggregationTuple(at);        
         
-        System.out.println(at.getIps());
+        //System.out.println(at.getIps());
         int expResult = 5;
         assertEquals(expResult, at.getIps().getTransitions().size());
         
     }
+    
+     /**
+     * Test of AggregationTuple ips method, of class ProtocolOntology.
+     */
+    @Test
+    public void testAggregationProductToIps() {
+        System.out.println("Testing aggregation product in merge");
+        ProtocolOntology po = new ProtocolOntology();
+        Concept create_order = new Concept("createOrder"), 
+                start_order = new Concept("startOrder"),
+                login = new Concept("login");
+        
+        AggregationTuple at = new AggregationTuple(start_order);
+        at.addAggregationConcept(create_order);
+        at.addAggregationConcept(login);       
+        
+        po.addAggregationTuple(at);        
+        
+        //System.out.println(at.getIps());
+        //int expResult = 5;
+        //assertEquals(expResult, at.getIps().getTransitions().size());
+    }
+        
 }
